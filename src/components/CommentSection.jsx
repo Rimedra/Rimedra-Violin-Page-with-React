@@ -5,10 +5,10 @@ import { db } from '../firebase';
 import { collection, addDoc, query, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 
 const CommentSection = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, username } = useAuth(); // Kullanıcı adı ve oturum bilgisi
   const [comment, setComment] = useState('');
   const [comments, setComments] = useState([]);
-  const { id } = useParams();
+  const { id } = useParams(); // Şarkı ID'si
 
   useEffect(() => {
     if (!id) return;
@@ -39,7 +39,7 @@ const CommentSection = () => {
     try {
       await addDoc(collection(db, 'songs', id, 'comments'), {
         text: comment,
-        author: currentUser.displayName || currentUser.email.split('@')[0], // Kullanıcı adı yoksa e-posta ön ekini kullan
+        author: username || 'Anonim', // Kullanıcı adı ya da 'Anonim'
         authorId: currentUser.uid,
         createdAt: new Date(),
       });
@@ -54,32 +54,8 @@ const CommentSection = () => {
 
     try {
       await deleteDoc(doc(db, 'songs', id, 'comments', commentId));
-      console.log('Yorum başarıyla silindi.');
     } catch (error) {
       console.error('Yorum silinirken hata oluştu:', error);
-    }
-  };
-
-  const handleAddReply = async (commentId, replyText) => {
-    if (!currentUser) {
-      alert('Yanıt verebilmek için giriş yapmalısınız.');
-      return;
-    }
-
-    if (replyText.trim() === '') {
-      alert('Yanıt boş olamaz.');
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, 'songs', id, 'comments', commentId, 'replies'), {
-        text: replyText,
-        author: currentUser.displayName || currentUser.email.split('@')[0], // Kullanıcı adı yoksa e-posta ön ekini kullan
-        createdAt: new Date(),
-      });
-      console.log('Yanıt başarıyla eklendi.');
-    } catch (error) {
-      console.error('Yanıt eklenirken hata oluştu:', error);
     }
   };
 
@@ -87,7 +63,6 @@ const CommentSection = () => {
     <div className="w-full p-4 bg-white rounded-lg shadow-md">
       <h3 className="text-xl font-bold mb-4 text-orange-600">Şarkı Hakkındaki Yorumlar</h3>
 
-      {/* Yorum Ekleme Alanı */}
       {currentUser ? (
         <div className="mb-4 text-black">
           <textarea
@@ -108,7 +83,6 @@ const CommentSection = () => {
         <p className="text-gray-600 mb-4">Yorum yapabilmek için giriş yapmalısınız.</p>
       )}
 
-      {/* Yorumları Listeleme */}
       <div className="space-y-4 mt-4">
         {comments.length > 0 ? (
           comments.map((cmt) => (
@@ -116,8 +90,8 @@ const CommentSection = () => {
               key={cmt.id}
               comment={cmt}
               handleDeleteComment={handleDeleteComment}
-              handleAddReply={handleAddReply}
               currentUser={currentUser}
+              username={username}
               songId={id}
             />
           ))
@@ -129,9 +103,9 @@ const CommentSection = () => {
   );
 };
 
-const Comment = ({ comment, handleDeleteComment, handleAddReply, currentUser, songId }) => {
-  const [showReplyBox, setShowReplyBox] = useState(false); // Yanıt kutusunu kontrol eder
-  const [reply, setReply] = useState(''); // Yanıt metni
+const Comment = ({ comment, handleDeleteComment, currentUser, username, songId }) => {
+  const [showReplyBox, setShowReplyBox] = useState(false);
+  const [reply, setReply] = useState('');
   const [showAllReplies, setShowAllReplies] = useState(false);
   const [replies, setReplies] = useState([]);
 
@@ -148,9 +122,31 @@ const Comment = ({ comment, handleDeleteComment, handleAddReply, currentUser, so
     return () => unsubscribe();
   }, [songId, comment.id]);
 
-  const handleToggleShowReplies = () => {
-    setShowAllReplies((prev) => !prev);
+  const handleAddReply = async () => {
+    if (!currentUser) {
+      alert('Yanıt verebilmek için giriş yapmalısınız.');
+      return;
+    }
+
+    if (reply.trim() === '') {
+      alert('Yanıt boş olamaz.');
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, 'songs', songId, 'comments', comment.id, 'replies'), {
+        text: reply,
+        author: username || 'Anonim', // Yanıtlarda da kullanıcı adı kullanımı
+        createdAt: new Date(),
+      });
+      setReply('');
+      setShowReplyBox(false);
+    } catch (error) {
+      console.error('Yanıt eklenirken hata oluştu:', error);
+    }
   };
+
+  const handleToggleShowReplies = () => setShowAllReplies((prev) => !prev);
 
   const visibleReplies = showAllReplies ? replies : replies.slice(0, 2);
 
@@ -173,7 +169,6 @@ const Comment = ({ comment, handleDeleteComment, handleAddReply, currentUser, so
         </button>
       </div>
 
-      {/* Yanıt Formu */}
       {showReplyBox && (
         <div className="mb-4 text-black">
           <textarea
@@ -184,11 +179,7 @@ const Comment = ({ comment, handleDeleteComment, handleAddReply, currentUser, so
             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-orange-200"
           ></textarea>
           <button
-            onClick={() => {
-              handleAddReply(comment.id, reply);
-              setReply(''); // Yanıt gönderildikten sonra sıfırla
-              setShowReplyBox(false); // Yanıt kutusunu kapat
-            }}
+            onClick={handleAddReply}
             className="bg-orange-500 text-white py-1 px-2 rounded mt-2 hover:bg-orange-600"
           >
             Yanıtla
@@ -196,7 +187,6 @@ const Comment = ({ comment, handleDeleteComment, handleAddReply, currentUser, so
         </div>
       )}
 
-      {/* Yanıtları Listeleme */}
       <div className="ml-4 mt-2">
         {visibleReplies.map((rep) => (
           <div key={rep.id} className="p-2 border-l-2 border-gray-300 mt-2">
