@@ -21,3 +21,12 @@ span {
   transform: translate(-2px, -2px); /* Hover durumunda buton hareket eder */
   box-shadow: 6px 6px 0 0 #FEF08A; /* Gölge büyür */
 }
+
+.levelButton {
+  @apply bg-orange-500 hover:bg-orange-700 text-white font-bold py-4 px-8 rounded-lg transition-all duration-300 ease-in-out w-full;
+  box-shadow: 2px 2px 5px rgba(255, 184, 76, 0.6);
+}
+
+.levelButton:hover {
+  box-shadow: 4px 4px 10px rgba(255, 165, 0, 0.8);
+}

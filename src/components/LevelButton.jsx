@@ -83,19 +83,22 @@ const LevelButtons = () => {
 
   return (
     <div className="flex flex-col items-center rounded-md">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-7 w-full px-4 mt-2">
-        {['Baslangic', 'Kolay', 'Normal', 'Zor'].map((lvl) => (
-          <button
-            key={lvl}
-            className={`transition-all duration-300 ease-in-out yellowShadow bg-orange-500 hover:bg-orange-700 text-white font-bold py-4 px-6 rounded w-full ${
-              level === lvl ? 'opacity-75 ring ring-yellow-300' : ''
-            }`}
-            onClick={() => handleButtonClick(lvl)}
-          >
-            {lvl}
-          </button>
-        ))}
-      </div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full px-6 mt-4">
+  {['Baslangic', 'Kolay', 'Normal', 'Zor'].map((lvl) => (
+    <button
+      key={lvl}
+      className={`levelButton ${
+        level === lvl ? 'opacity-75 ring ring-yellow-300' : ''
+      }`}
+      onClick={() => handleButtonClick(lvl)}
+    >
+      {lvl}
+    </button>
+  ))}
+</div>
+
+
+
 
       {level && (
         <div className="mt-8 w-full max-w-3xl">

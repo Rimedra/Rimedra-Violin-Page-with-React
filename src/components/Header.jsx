@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { FaUser, FaHeart, FaBars, FaMusic } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { animateScroll as scroll } from 'react-scroll';
+
 
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
@@ -23,6 +25,8 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isRequestSent, setIsRequestSent] = useState(false);
   const [isNoteAlertVisible, setIsNoteAlertVisible] = useState(false); // Notalarım uyarısı için durum
+  const [isSearchAlertVisible, setIsSearchAlertVisible] = useState(false);
+
 
   const navigate = useNavigate();
   const { currentUser, username, logout, isAdmin } = useAuth();
@@ -51,6 +55,9 @@ const Header = () => {
 
   const handleSearchSubmit = (e) => {
     e.preventDefault();
+    // Eğer arama alanı boşsa yönlendirme yapma
+    if (!searchTerm.trim()) return;
+  
     if (filteredSuggestions.length > 0) {
       navigate(`/levels/song/${filteredSuggestions[highlightedIndex >= 0 ? highlightedIndex : 0].id}`);
       setSearchTerm('');
@@ -59,7 +66,8 @@ const Header = () => {
       alert('Aradığınız şarkı bulunamadı!');
     }
   };
-
+  
+  
   const handleKeyDown = (e) => {
     if (e.key === 'ArrowDown') {
       setHighlightedIndex((prevIndex) =>
@@ -122,14 +130,15 @@ const Header = () => {
       >
         {/* Başlık ve Logo */}
         <h1 className="font-medium flex items-center">
-          <Link to="/" className="flex items-center">
-            <b className="font-bold poppins">Rimedra</b> Violin
-            <img
-              src="https://virtualpiano.net/wp-content/uploads/2020/08/Virtual-Violin-Virtual-Piano.png"
-              alt="Violin Icon"
-              className="ml-2 w-6 h-6 hidden sm:block"
-            />
-          </Link>
+        <Link to="/" className="flex items-center" onClick={() => scroll.scrollToTop({ smooth: true, duration: 500 })}>
+        <b className="font-bold poppins">Rimedra</b> Violin
+          <img
+            src="https://virtualpiano.net/wp-content/uploads/2020/08/Virtual-Violin-Virtual-Piano.png"
+            alt="Violin Icon"
+           className="ml-2 w-6 h-6 hidden sm:block"
+          />
+        </Link>
+
 
           {/* Nota İstek Butonu (Sadece md ve üstü ekranlarda görünür) */}
           <button
