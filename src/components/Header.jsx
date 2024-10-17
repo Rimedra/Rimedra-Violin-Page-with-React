@@ -240,11 +240,12 @@ const Header = () => {
                   <p className="ml-1 ">Giriş Yap</p>
                 </button>
                 <button
-                  onClick={handleSignUpClick}
-                  className=" relative overflow-hidden px-5 py-2 group rounded-full bg-white text-slate-950"
-                >
-                  <h4 className="relative z-10">Kayıt Ol</h4>
-                </button>
+  onClick={handleSignUpClick}
+  className="yellowShadow group"
+>
+  <h4 className="relative z-10">Kayıt Ol</h4>
+</button>
+
               </>
             ) : (
               <div className="flex items-center gap-4">

@@ -2,19 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
-*{font-family: "Poppins", sans-serif;}
-span{
-  font-family: inherit;
-  font-weight: inherit;
-
+* {
+  font-family: "Poppins", sans-serif;
 }
 
+span {
+  font-family: inherit;
+  font-weight: inherit;
+}
+
+/* Gölge animasyonu */
 .yellowShadow {
-  box-shadow:3px 2px 0 0 #FEF08A;
+  @apply bg-white text-slate-950 rounded-full px-5 py-2 relative transition-all duration-300 ease-in-out;
+  box-shadow: 3px 2px 0 0 #FEF08A;
 }
 
 .yellowShadow:hover {
-  transform: translate(-1pc );
-  box-shadow:6px 6px 0 0 #FEF08A;
+  transform: translate(-2px, -2px); /* Hover durumunda buton hareket eder */
+  box-shadow: 6px 6px 0 0 #FEF08A; /* Gölge büyür */
 }
-
