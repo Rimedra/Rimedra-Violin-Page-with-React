@@ -7,8 +7,8 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase';
 
 const Modal = React.lazy(() => import('./Modal'));
-const LoginForm = React.lazy(() => import('./LoginForm'));
-const SignUpForm = React.lazy(() => import('./SignUpForm'));
+import LoginForm from './LoginForm';  
+import SignUpForm from './SignUpForm'; 
 
 const Header = () => {
   const [y, setY] = useState(0);
